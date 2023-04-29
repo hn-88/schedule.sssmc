@@ -1,0 +1,101 @@
+/* For mobile phones: */
+[class*="col-"] {
+  width: 100%;
+}
+
+div.onlymobile {
+  display:inline-block;
+  float:right;
+}
+
+@media only screen and (min-width: 768px) {
+  /* For desktop: */
+  .col-1 {
+  width: 80%;
+  display:inline-block;
+  float:left;
+  }
+  .col-2 {width: 18%;
+  display:inline-block;
+  float:right;
+  }
+}
+
+#sch th {
+background-color:#d69839; /*orange */
+font-family: Verdana, Arial, Helvetica, sans-serif; 
+FONT-SIZE: 10pt;
+font-weight: bold;
+color: white;
+}
+
+#sch td { 
+font-family: 'Myriad Pro', Roboto; 
+FONT-SIZE: 12pt;
+font-weight: normal;
+color: black;
+}
+
+div.redbold {
+font-family: 'Myriad Pro', Roboto; 
+FONT-SIZE: 12pt;
+font-weight: bold;
+color: #d74607;
+}
+
+/* For mobile phones: */
+@media only screen and (max-width: 768px) {
+	  #sch td:nth-child(1), 
+	  #sch th:nth-child(1),
+	  #sch td:nth-child(3), 
+	  #sch th:nth-child(3),
+	  #sch td:nth-child(5), 
+	  #sch th:nth-child(5),
+	  #sch td:nth-child(6), 
+	  #sch th:nth-child(6) {
+		display:none;
+	  }
+	  
+	  .wid15 {
+		 width: 100px;
+	}
+	 
+}
+
+.homediv {
+font-family: 'Myriad Pro', Roboto; 
+FONT-SIZE: 12pt;
+background-color: #D69839; /*orange */
+}
+a.homediv  {
+ color: blanchedalmond;  /* link text color light orange */
+}
+
+.ldiv {
+text-align:left;
+}
+
+.rdiv {
+text-align:right;
+}
+
+.choosebg {
+background-color: #344655; /* blue */
+color: white;
+border: 1 px solid white;
+border-collapse: collapse;
+
+}
+
+.blacktext {
+background-color: white; 
+color: black;
+}
+
+@media only screen and (min-width: 768px) {
+  /* For desktop: */
+  div.onlymobile {   
+  display:none;
+  }
+}
+

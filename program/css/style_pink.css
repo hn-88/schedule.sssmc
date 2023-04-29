@@ -1,0 +1,150 @@
+/* For mobile phones: */
+[class*="col-"] {
+  width: 100%;
+}
+
+body {
+	margin: 0px;
+}
+
+table.t100 {
+width:100%;
+/*height="49" */
+/* cellspacing="1" */
+border-spacing: 1px;
+padding: 12px;
+border: 0;
+/* align="center" */
+margin-left:auto; 
+margin-right:auto;
+background-color:  #FDD9C4;
+}
+
+a:link {
+	color: #990000;
+	text-decoration: none;
+	font-weight: bold;
+}
+a:hover {
+	color: #000099;
+	text-decoration: none;
+	font-weight: bold;
+
+}
+a:visited {
+	color: #990000;
+	text-decoration: none;
+	font-weight: bold;
+}
+a:visited:hover {   
+	color: #000099;
+	text-decoration: none;
+	font-weight: bold;
+}
+
+
+div.onlymobile {
+  display:inline-block;
+  float:right;
+}
+
+@media only screen and (min-width: 768px) {
+  /* For desktop: */
+  .col-1 {
+  width: 80%;
+  display:inline-block;
+  float:left;
+  }
+  .col-2 {width: 18%;
+  display:inline-block;
+  float:right;
+  }
+}
+
+#sch th {
+background-color: #CCCCE6; /*#d69839; orange */
+font-family: Verdana, Arial, Helvetica, sans-serif; 
+FONT-SIZE: 10pt;
+font-weight: bold;
+color: purple;
+padding: 12px;
+}
+
+#sch td { 
+font-family: 'Myriad Pro', Roboto; 
+FONT-SIZE: 12pt;
+font-weight: normal;
+color: black;
+padding: 12px;
+}
+
+div.redbold {
+font-family: 'Myriad Pro', Roboto; 
+FONT-SIZE: 12pt;
+font-weight: bold;
+color: #d74607;
+}
+
+/* For mobile phones: */
+@media only screen and (max-width: 768px) {
+	  #sch td:nth-child(2), 
+	  #sch th:nth-child(2),
+	  #sch td:nth-child(4), 
+	  #sch th:nth-child(4),
+	  #sch td:nth-child(6), 
+	  #sch th:nth-child(6),
+	  #sch td:nth-child(7), 
+	  #sch th:nth-child(7) {
+		display:none;
+	  }
+	  
+	  .wid15 {
+		 width: 100px;
+	}
+	 
+}
+
+.homediv {
+font-family: 'Myriad Pro', Roboto; 
+FONT-SIZE: 12pt;
+background-color:  #FDD9C4; /* #038CBF; blue from radiosai home page */
+}
+a.homediv  {
+ color: #990000;
+}
+
+.ldiv {
+text-align:left;
+}
+
+.rdiv {
+text-align:right;
+}
+
+.choosebg {
+background-color: #F7E5D7; /* rose pink */
+color: black;
+border: 1px solid #d69839; /*orange */
+border-collapse: collapse;
+
+}
+
+.pad17 {
+padding: 17px; 
+ 
+}
+
+.blacktext {
+background-color: white; 
+color: black;
+}
+
+@media only screen and (min-width: 768px) {
+  /* For desktop: */
+  div.onlymobile {   
+  display:none;
+  }
+}
+
+/* background-color: #FDD9C4; light pink */
+

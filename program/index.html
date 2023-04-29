@@ -1,0 +1,592 @@
+
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
+	<link href="css/style_new.css" type="text/css" rel="stylesheet">
+	<link href="css/style_notable.css" type="text/css" rel="stylesheet">
+	<link href="css/style_modal.css" type="text/css" rel="stylesheet">
+	<title>RadioSai Schedule</title>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js">
+	</script>
+	<script>!function (d, s, id) { var js, fjs = d.getElementsByTagName(s)[0], p = /^http:/.test(d.location) ? 'http' : 'https'; if (!d.getElementById(id)) { js = d.createElement(s); js.id = id; js.src = p + "://platform.twitter.com/widgets.js"; fjs.parentNode.insertBefore(js, fjs); } }(document, "script", "twitter-wjs");</script>
+	<script type="text/javascript">
+		var schdata;		// these are global variables
+		var strDateSelected;
+		var tzoffsetmilli = (new Date()).getTimezoneOffset() * 60000; //offset in milliseconds
+		//console.log('tzoneoffsetmilli as initialized = '+tzoffsetmilli)
+		var timeZoneStr = Intl.DateTimeFormat().resolvedOptions().timeZone;
+		var strStreamNameSelected;
+
+		function datesdropdownupdate() {
+			// get currentlocaldatetime, and get dates 30 days before that.
+			// select currentlocaldate
+			// check for files with newer dates. If available, add those also.
+			var currentdatetime = new Date();
+			var currentdatetimemillisec = currentdatetime.getTime();
+			var selecDay = document.getElementById("dateselector");
+			selecDay.options.length = 0;
+
+
+			var optiondatemillisec = currentdatetimemillisec - 30 * 24 * 60 * 60 * 1000;
+			// 30 days before currentdatetime
+
+			while (optiondatemillisec < currentdatetimemillisec) {
+				var option = document.createElement("option");
+				var optiondate = new Date(optiondatemillisec);
+				option.value = optiondate.toISOString().substring(0, 10);
+				option.text = optiondate.toLocaleString('en-us', { day: 'numeric', month: 'short', year: 'numeric' })
+				selecDay.add(option);
+				optiondatemillisec += 24 * 60 * 60 * 1000;
+			}
+			// now add today's date and make it the selected option
+			var option = document.createElement("option");
+			var optiondate = new Date(currentdatetimemillisec);
+			option.value = optiondate.toISOString().substring(0, 10);
+			option.text = optiondate.toLocaleString('en-us', { day: 'numeric', month: 'short', year: 'numeric' })
+			selecDay.add(option);
+			selecDay.value = optiondate.toISOString().substring(0, 10);
+			// now add all those dates for which schedule data files are available
+			// currently doing for 5 days in future
+			var dateplus5ms = new Date(currentdatetimemillisec + 5 * 24 * 60 * 60 * 1000);
+			var dtimems = currentdatetimemillisec + 24 * 60 * 60 * 1000;
+			while (dtimems < dateplus5ms) {
+				addifscheduledataavailable(dtimems);
+				dtimems += 24 * 60 * 60 * 1000;
+			}
+		}
+
+		function adddatetodropdown(odate) {
+			//console.log('adddatetodropdown called.');
+			var selecDay = document.getElementById("dateselector");
+			var option = document.createElement("option");
+			option.value = odate.toISOString().substring(0, 10);
+			option.text = odate.toLocaleString('en-us', { day: 'numeric', month: 'short', year: 'numeric' })
+			selecDay.add(option);
+		}
+
+		function addifscheduledataavailable(dtimems) {
+			var odate = new Date(dtimems);
+			var ostring = odate.toISOString().substring(0, 10);
+			var urlToCheck = "./data/1-" + ostring + ".txt";
+			//console.log('urlToCheck='+urlToCheck);
+			// https://stackoverflow.com/questions/3646914/how-do-i-check-if-file-exists-in-jquery-or-pure-javascript
+			$.ajax({
+				url: urlToCheck,
+				type: 'HEAD',
+				error: function () {
+					//1-file does not exist
+					// check for another stream file
+					urlToCheck = "./data/5-" + ostring + ".txt";
+					//console.log('Checking '+urlToCheck)
+					$.ajax({
+						url: urlToCheck,
+						type: 'HEAD',
+						error: function () {
+							//5-file does not exist
+							// check for another stream file
+							urlToCheck = "./data/6-" + ostring + ".txt";
+							//console.log('Checking '+urlToCheck)
+							$.ajax({
+								url: urlToCheck,
+								type: 'HEAD',
+								error: function () {
+									//6-file does not exist
+									// so do not call adddate function
+								},
+								success: function () {
+									//6-file exists
+									//console.log('6exists')
+									adddatetodropdown(odate);
+								}
+							});
+						},
+						success: function () {
+							//5-file exists
+							//console.log('5exists')
+							adddatetodropdown(odate);
+						}
+					});
+
+
+
+				},
+				success: function () {
+					//1-file exists
+					//console.log('1exists')
+					adddatetodropdown(odate);
+				}
+			});
+
+		}
+
+		function loadselecteddatedata() {
+			// first clear display data if exists from earlier schedule
+			schdata = '';
+			// check if data file exists, and load
+			// selected date data + prev date data + next date data
+			// to allow for displaying midnight to midnight in local timezone
+			strDateSelected = document.getElementById('dateselector').selectedOptions[0].value;
+			//console.log("selecteddate is " + strDateSelected);
+			strStreamIdSelected = document.getElementById('strIdselector').selectedOptions[0].value;
+			strStreamNameSelected = document.getElementById('strIdselector').selectedOptions[0].text;
+
+			var selDatems = new Date(strDateSelected + " 09:09:09").getTime();
+			//console.log("selectedDatems converted back to ISO=" + new Date(selDatems).toISOString());
+			var nextDate = new Date(selDatems + 24 * 60 * 60 * 1000);
+			var prevDate = new Date(selDatems - 24 * 60 * 60 * 1000);
+
+			var strPrevDate = prevDate.toISOString().substring(0, 10);
+			var strNextDate = nextDate.toISOString().substring(0, 10);
+			var dtimePrevMidnight = new Date(strPrevDate + " 23:59:59");
+			var dtimeSelectedMidnight = new Date(strDateSelected + " 23:59:59");
+			//console.log(dtimePrevMidnight.toISOString() + ' to ' + dtimeSelectedMidnight.toISOString());
+
+			var pathname1 = "./data/" + strStreamIdSelected + "-" + strPrevDate + ".txt";
+			var pathname2 = "./data/" + strStreamIdSelected + "-" + strDateSelected + ".txt";
+			var pathname3 = "./data/" + strStreamIdSelected + "-" + strNextDate + ".txt";
+			try {
+				$.ajax({
+					url: pathname1,
+					type: 'GET',
+					success: function (data) {
+						schdata = JSON.parse(data); // can be a global variable too...
+						//console.log('length after 1=' + schdata.length)
+						$.ajax({
+							url: pathname2,
+							type: 'GET',
+							success: function (data2) {
+								schdata = schdata.concat(JSON.parse(data2));
+								//console.log('length after 2=' + schdata.length)
+								$.ajax({
+									url: pathname3,
+									type: 'GET',
+									success: function (data3) {
+										schdata = schdata.concat(JSON.parse(data3));
+										//console.log('length after 3=' + schdata.length);
+										showDateFiltRows(schdata, dtimePrevMidnight, dtimeSelectedMidnight);
+									}, //pathname1&2&3 success end
+									error: function () {
+										//1&2success, 3f
+										showDateFiltRows(schdata, dtimePrevMidnight, dtimeSelectedMidnight);
+									}
+								}); // pathname1&2&3 ajax end
+							},
+							error: function () {
+								// 1s2f, but try 3
+								$.ajax({
+									url: pathname3,
+									type: 'GET',
+									success: function (data3) {
+										schdata = schdata.concat(JSON.parse(data3));
+										//console.log('length after 3=' + schdata.length);
+										showDateFiltRows(schdata, dtimePrevMidnight, dtimeSelectedMidnight);
+									}, //pathname1&3 success end
+									error: function () {
+										// 1 success, but 2 and 3 fail. So, just display.
+										showDateFiltRows(schdata, dtimePrevMidnight, dtimeSelectedMidnight);
+									}
+								}); // pathname1&3 ajax end
+
+							}
+						}); // pathname2 ajax end
+					}, // pathname1 success end
+					error: function () {
+						// 1 failed, but try 2 and 3
+						$.ajax({
+							url: pathname2,
+							type: 'GET',
+							success: function (data2) {
+								schdata = JSON.parse(data2);
+								//console.log('length after 2=' + schdata.length)
+								$.ajax({
+									url: pathname3,
+									type: 'GET',
+									success: function (data3) {
+										schdata = schdata.concat(JSON.parse(data3));
+										//console.log('length after 3=' + schdata.length);
+										showDateFiltRows(schdata, dtimePrevMidnight, dtimeSelectedMidnight);
+									}, //pathname2&3 success end
+									error: function () {
+                                        // 1 fail, but 2 success and 3 fail. So, just display.
+                                        showDateFiltRows(schdata, dtimePrevMidnight, dtimeSelectedMidnight);
+                                    }
+								}); // pathname1f&2&3 ajax end
+							},
+							error: function () {
+								// 1f2f
+								$.ajax({
+									url: pathname3,
+									type: 'GET',
+									success: function (data3) {
+										schdata = JSON.parse(data3);
+										//console.log('length after 3=' + schdata.length);
+										showDateFiltRows(schdata, dtimePrevMidnight, dtimeSelectedMidnight);
+									}, //pathname!1&!2&3 success end
+									error: function () {
+										// 1f2f3f but still run display to blank it out.
+										showDateFiltRows(schdata, dtimePrevMidnight, dtimeSelectedMidnight);
+									}
+								}); // pathname!1&!2&3 ajax end
+							}
+						}); // pathname2 ajax end
+
+					}
+
+				}); // pathname1 ajax end
+			}
+			catch (err) {
+				//console.log(err)
+
+			}
+
+		}
+
+		function dcheck() {
+			//document.forms[0].dchange.value = 1;
+			//check();
+			loadselecteddatedata();
+
+		}
+		function check() {
+			//~ document.forms[0].action = "/program/Index_new.php";
+			//~ document.forms[0].target = "";
+			//~ document.forms[0].submit();
+		}
+
+		function todayFullSchedule() {
+			var tdate = new Date();
+			var selecDay = document.getElementById("dateselector");
+			selecDay.value = tdate.toISOString().substring(0, 10);
+			loadselecteddatedata()
+		}
+
+		function dnload(dcounter) {
+			//var str = "";
+			//if (document.forms[0].dfids) {
+			//	if (document.forms[0].dfids[dcounter])
+			//		str = document.forms[0].dfids[dcounter].value;
+			//	else if (document.forms[0].dfids)
+			//		str = document.forms[0].dfids.value;
+			//}
+			//document.forms[0].allfids.value = str;
+			//document.forms[0].action = "https://schedule.sssmediacentre.org/program/Download.php";
+			//document.forms[0].target = "_blank";
+			//document.forms[0].submit();
+            var modal = document.getElementById("myModal");
+			modal.style.display = "block";
+			var modalbody = document.getElementById("myModalbody");
+			modalbody.innerHTML = `<p><a href="https://www.sssmediacentre.org/#/global-search-page/search/dd%202001%2011%2023" target=_blank>DD 2001 11 23</a></p>
+                <p> <a href="https://www.sssmediacentre.org/#/global-search-page/search/dd%202002%2011%2023" target=_blank>DD 2002 11 23</a></p > `;
+		}
+
+		
+		function formatGMTtime(timestring) {
+			var hours = parseInt(timestring.substring(11, 13));
+			var mins = parseInt(timestring.substring(14, 16));
+			var ampm = ' AM';
+
+			if (mins >= 55) { mins = 0; hours = hours + 1; }
+			else {
+				mins = mins + 5 - (mins % 5);
+				if (mins == 5 || mins == 25 || mins == 35 || mins == 55)
+					mins -= 5;
+			}
+
+			if (hours > 12) {
+				ampm = ' PM';
+				hours = hours - 12;
+			} else if (hours == 12) {
+				ampm = ' PM';
+			}
+
+			return hours + ':' + ("0" + mins).slice(-2) + ampm;
+		}
+
+		function formatLocaltime(timestring) {
+			var gtimestring = timestring.substring(0, 10) + 'T' + timestring.substring(11, 16) + ':00.000Z';
+			// this converts this to ISOString format
+			//console.log('formatLocaltime - gtimestring is ' + gtimestring)
+			var gDateTime = new Date(gtimestring);
+			//console.log(gDateTime.getTime());
+			//console.log(tzoffsetmilli)
+			// tzoffsetmilli for India = -19800000
+			// note the minus sign!
+
+			var ltimestring = (new Date(gDateTime.getTime() - tzoffsetmilli)).toISOString();
+			//var ltimestring = timestring;
+			//console.log(ltimestring)
+
+			var hours = parseInt(ltimestring.substring(11, 13));
+			var mins = parseInt(ltimestring.substring(14, 16));
+			var ampm = ' AM';
+
+			if (mins >= 55) { mins = 0; hours = hours + 1; }
+			else {
+				mins = mins + 5 - (mins % 5);
+				if (mins == 5 || mins == 25 || mins == 35 || mins == 55)
+					mins -= 5;
+			}
+
+			if (hours > 12) {
+				ampm = ' PM';
+				hours = hours - 12;
+			} else if (hours == 12) {
+				ampm = ' PM';
+			}
+
+			return hours + ':' + ("0" + mins).slice(-2) + ampm;
+		}
+
+
+		function showDateFiltRows(things, d1, d2) {
+			// select is for B, C, D, E, G, H, I, M
+			//var d1 = new Date("2023-02-11 23:59:59");
+			//var d2 = new Date("2023-02-12 23:59:59");
+			var maintable = $('#sch');
+			//maintable.empty();
+			var mytbl = document.getElementById("sch");
+			mytbl.getElementsByTagName("tbody")[0].innerHTML = mytbl.rows[0].innerHTML;
+			// clear all rows except the header row, rows[0]
+
+			// display the schedule stream, date, timezone in
+			// top div and title
+			document.getElementById("displayinfo").innerHTML = strStreamNameSelected + ' - ' +
+				strDateSelected + ' - in timezone ' + timeZoneStr;
+			document.title = 'Schedule for ' + strStreamNameSelected + ' - ' +
+				strDateSelected + ' - in timezone ' + timeZoneStr;
+
+			var serialnum = 1;
+			var dlcounter = 0;
+
+			for (var i = 0; i < things.length; i++) {
+				var gmttimestr = things[i][1].substring(0, 10) + 'T' + things[i][1].substring(11, 16) + ':00.000Z';
+				var d = new Date(gmttimestr);
+				//console.log(d.toISOString())
+
+				if (d > d1 && d < d2) {
+
+					var htmlstring = `<tr >
+
+						<td align="center" valign="top">
+							`+ serialnum + `
+						</td>
+
+						<td align="center" valign="top">
+							`+ formatLocaltime(things[i][1]) + `
+						</td>
+
+						<td align="center" valign="top">
+							`+ formatGMTtime(things[i][1]) + `
+						</td>
+
+						<td>
+							<div class="redbold">`+ things[i][2] + `</div>
+							`+ things[i][3];
+					if (things[i][6] == '1') {
+						htmlstring += `<font color='#800080'> - <strong>NEW!</strong></font>`
+					} else {
+						try {
+							if (things[i][7].substring(0, 2) == '20') {
+								// if the firstplayeddate is not NULL and not blank
+								htmlstring += ' - first broadcast on ' + things[i][7];
+							}
+						}
+						catch (err) {
+							// do nothing
+							//console.log(err);
+						}
+					}
+					htmlstring += `<div class="onlymobile">
+								&nbsp; &nbsp; `;
+					if (things[i][5] != '') {
+						htmlstring += `<a href="`+things[i][5]+`" style="text-decoration:none"
+									target="_blank">
+									<img src="img/dl.png" alt="Download" border="0"
+										onMouseOver="this.src='img/dlon.png'" onMouseOut="this.src='img/dl.png'">
+								</a> `;
+					}
+
+					htmlstring += `</div><br><br>
+						</td>
+
+						<td align="center" valign="top">
+							`+ things[i][4] + `
+						</td>
+
+						<td align="center" valign="top">`;
+					if (things[i][5] != '') {
+                        htmlstring += ` <a href = "`+things[i][5]+`" style = "text-decoration:none"
+                        target = "_blank" >
+                            <img src="img/dl.png" alt="Download" border="0"
+                                onMouseOver="this.src='img/dlon.png'" onMouseOut="this.src='img/dl.png'">
+                            </a> `;
+					}
+
+					htmlstring += `
+						</td>
+					</tr>
+					`;
+
+					maintable.append(htmlstring);
+
+					serialnum++;
+
+				}
+
+			}
+
+		}
+
+		$(function () {
+			// this runs on page load
+			datesdropdownupdate();
+			loadselecteddatedata();
+
+		});
+
+
+
+	</script>
+</head>
+<body topmargin="0" marginwidth="0" marginheight="0" leftmargin="0">
+	<div class="col-1">
+		<!-------------------------------------------------------------------------------------------------------------------------------------->
+		<form name="scheduleForm" method="post" action="/program/Index_new.php">
+			<table width="100%" height="49" cellspacing="1" cellpadding="12" border="0" align="center">
+				<tbody>
+					<tr valign="middle" align="center">
+						<td width="50%" height="47" class="homediv ldiv">
+							<a class="homediv" href="https://www.sssmediacentre.org/">
+								Home
+							</a>
+						</td>
+						<td width="50%" class="homediv rdiv">
+							<div style="color:white;" id="displayinfo">PrasanthiStream - 2023-03-03 - Asia/Kolkata </div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+
+
+			<table class="choosebg" width="100%" height="50" border="0" align="center">
+				<tbody>
+					<tr>
+						<td>
+							<table class="choosebg" width="100%" cellspacing="1" cellpadding="17" border="1">
+								<tbody>
+									<tr>
+										<td class="homediv choosebg" height="44">Choose the Station:</td>
+
+										<td colspan="2" class="homediv choosebg">
+											<select id="strIdselector" name="streamId" class="homediv choosebg blacktext" onchange="javascript:dcheck()">
+												<option value="6">
+													DiscourseStream
+												</option>
+												<option value="1"
+														selected>
+													PrasanthiStream
+												</option>
+												<option value="5">
+													TeluguStream
+												</option>
+											</select>
+										</td>
+									</tr>
+
+
+
+									<tr>
+										<td height="41" class="homediv choosebg">Choose Date:</td>
+										<td bgcolor="#344655">
+											<select id="dateselector" name="currentDate" class="homediv choosebg blacktext wid15" onChange="javascript:dcheck()">
+												<option value=" ">
+													-
+												</option>
+
+											</select>
+											<input type="hidden" name="dchange" value="0">
+										</td>
+
+										<td class="homediv choosebg">
+											<input type="hidden" name="todays" value="0">
+											or) <a href="javascript:todayFullSchedule()" style="color:#fff">Return to today's schedule</a>
+										</td>
+									</tr>
+
+							</table>
+						</td>
+					</tr>
+			</table>
+			<!-------------------------------------------------------------------------------------------------------------------------------------->
+			<table class="homediv choosebg" width="100%" cellpadding="5" align="center" border="0" height="50">
+
+				<tr>
+					<td height="36" class="homediv choosebg">
+						To download or listen to a program, choose the search link &nbsp;<img src="img/dl.png">&nbsp; on the <strong>RIGHT</strong> of the program in the table below, to search for the respective content in sssmediacentre.org.<br><br>&nbsp;
+
+					</td>
+				</tr>
+
+				
+			</table>
+
+
+			<!-------------------------------------------------------------------------------------------------------------------------------------->
+			<table id="sch" width="100%" border="0" cellspacing="1" cellpadding="12">
+				<tbody>
+					<tr>
+
+
+						<th width="7%">
+							SL. No.
+						</th>
+
+						<th width="11%">
+							Time
+							<br><small>(local)</small>
+						</th>
+
+						<th width="10%">
+							Time <br> (GMT)
+						</th>
+
+						<th>
+							Description
+						</th>
+
+						<th width="4%">
+							Duration <br>(min)
+						</th>
+
+						<th width="11%">
+							Search<br /> <small>in SSSMC</small>
+						</th>
+					</tr>
+
+
+				</tbody>
+			</table>
+		</form>
+		<!-------------------------------------------------------------------------------------------------------------------------------------->
+
+
+		<hr color="brown" size="1" width="90%" align="center">
+
+		<p align="right"><a href="#" style="text-decoration:none"><img src="img/top.gif" alt="top" style="text-decoration:none"></a></p><br>
+	</div>
+
+
+
+	<div class="col-2" valign="top" bgcolor="#eae6e3">
+		<br><br><br><br><br>
+
+		<a class="twitter-timeline" href="https://twitter.com/sghradiosai" data-widget-id="347202777698672642" data-chrome="noheader" width="300" height="900">Tweets by @sghradiosai</a>
+
+
+	</div>
+
+	<!-- InstanceEnd -->
+	
+</body>
+</html>
