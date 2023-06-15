@@ -131,16 +131,18 @@
 			strStreamIdSelected = document.getElementById('strIdselector').selectedOptions[0].value;
 			strStreamNameSelected = document.getElementById('strIdselector').selectedOptions[0].text;
 
-			var selDatems = new Date(strDateSelected + " 09:09:09").getTime();
+			var selDatems = new Date(strDateSelected + "T09:09:09Z").getTime();
 			//console.log("selectedDatems converted back to ISO=" + new Date(selDatems).toISOString());
 			var nextDate = new Date(selDatems + 24 * 60 * 60 * 1000);
 			var prevDate = new Date(selDatems - 24 * 60 * 60 * 1000);
 
 			var strPrevDate = prevDate.toISOString().substring(0, 10);
 			var strNextDate = nextDate.toISOString().substring(0, 10);
-			var dtimePrevMidnight = new Date(strPrevDate + " 23:59:59");
-			var dtimeSelectedMidnight = new Date(strDateSelected + " 23:59:59");
-			//console.log(dtimePrevMidnight.toISOString() + ' to ' + dtimeSelectedMidnight.toISOString());
+			var dtimePrevMidnightGMT = new Date(strPrevDate + "T23:59:59Z");
+			var dtimePrevMidnight = new Date(dtimePrevMidnightGMT.getTime() + tzoffsetmilli);
+			var dtimeSelectedMidnightGMT = new Date(strDateSelected + "T23:59:59Z");
+			var dtimeSelectedMidnight = new Date(dtimeSelectedMidnightGMT.getTime() + tzoffsetmilli);
+			console.log(dtimePrevMidnight.toISOString() + ' to ' + dtimeSelectedMidnight.toISOString());
 
 			var pathname1 = "./data/" + strStreamIdSelected + "-" + strPrevDate + ".txt";
 			var pathname2 = "./data/" + strStreamIdSelected + "-" + strDateSelected + ".txt";
