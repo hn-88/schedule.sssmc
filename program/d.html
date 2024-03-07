@@ -397,7 +397,7 @@
 					htmlstring += `<div class="onlymobile">
 								&nbsp; &nbsp; `;
 					if (things[i][5] != '') {
-						htmlstring += `<a href="#" onclick="dnload(things[i][5])" style="text-decoration:none" >
+						htmlstring += `<a href="#" onclick="dnload("` + things[i][5] + `")" style="text-decoration:none" >
 									<img src="img/dl.png" alt="Download" border="0"
 										onMouseOver="this.src='img/dlon.png'" onMouseOut="this.src='img/dl.png'">
 								</a> `;
@@ -412,7 +412,7 @@
 
 						<td align="center" valign="top">`;
 					if (things[i][5] != '') {
-                        htmlstring += `<a href="#" onclick="dnload(things[i][5])" style="text-decoration:none" >
+                        htmlstring += `<a href="#" onclick="dnload("` + things[i][5] + `")" style="text-decoration:none" >
 									<img src="img/dl.png" alt="Download" border="0"
 										onMouseOver="this.src='img/dlon.png'" onMouseOut="this.src='img/dl.png'">
 								</a> `;
