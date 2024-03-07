@@ -68,41 +68,41 @@
 		function addifscheduledataavailable(dtimems) {
 			var odate = new Date(dtimems);
 			var ostring = odate.toISOString().substring(0, 10);
-			var urlToCheck = "./data/1-" + ostring + ".txt";
+			var urlToCheck = "./data/d1-" + ostring + ".txt";
 			//console.log('urlToCheck='+urlToCheck);
 			// https://stackoverflow.com/questions/3646914/how-do-i-check-if-file-exists-in-jquery-or-pure-javascript
 			$.ajax({
 				url: urlToCheck,
 				type: 'HEAD',
 				error: function () {
-					//1-file does not exist
+					//d1-file does not exist
 					// check for another stream file
-					urlToCheck = "./data/5-" + ostring + ".txt";
+					urlToCheck = "./data/d5-" + ostring + ".txt";
 					//console.log('Checking '+urlToCheck)
 					$.ajax({
 						url: urlToCheck,
 						type: 'HEAD',
 						error: function () {
-							//5-file does not exist
+							//d5-file does not exist
 							// check for another stream file
-							urlToCheck = "./data/6-" + ostring + ".txt";
+							urlToCheck = "./data/d6-" + ostring + ".txt";
 							//console.log('Checking '+urlToCheck)
 							$.ajax({
 								url: urlToCheck,
 								type: 'HEAD',
 								error: function () {
-									//6-file does not exist
+									//d6-file does not exist
 									// so do not call adddate function
 								},
 								success: function () {
-									//6-file exists
+									//d6-file exists
 									//console.log('6exists')
 									adddatetodropdown(odate);
 								}
 							});
 						},
 						success: function () {
-							//5-file exists
+							//d5-file exists
 							//console.log('5exists')
 							adddatetodropdown(odate);
 						}
@@ -112,7 +112,7 @@
 
 				},
 				success: function () {
-					//1-file exists
+					//d1-file exists
 					//console.log('1exists')
 					adddatetodropdown(odate);
 				}
@@ -144,9 +144,9 @@
 			var dtimeSelectedMidnight = new Date(dtimeSelectedMidnightGMT.getTime() + tzoffsetmilli);
 			console.log(dtimePrevMidnight.toISOString() + ' to ' + dtimeSelectedMidnight.toISOString());
 
-			var pathname1 = "./data/" + strStreamIdSelected + "-" + strPrevDate + ".txt";
-			var pathname2 = "./data/" + strStreamIdSelected + "-" + strDateSelected + ".txt";
-			var pathname3 = "./data/" + strStreamIdSelected + "-" + strNextDate + ".txt";
+			var pathname1 = "./data/d" + strStreamIdSelected + "-" + strPrevDate + ".txt";
+			var pathname2 = "./data/d" + strStreamIdSelected + "-" + strDateSelected + ".txt";
+			var pathname3 = "./data/d" + strStreamIdSelected + "-" + strNextDate + ".txt";
 			try {
 				$.ajax({
 					url: pathname1,
