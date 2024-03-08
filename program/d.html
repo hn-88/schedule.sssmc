@@ -434,7 +434,15 @@
                         htmlstring += `<a href="#" onclick="dnload('` + things[i][5] + `')" style="text-decoration:none" >
 									<img src="img/d2.png" alt="Download" border="0"
 										onMouseOver="this.src='img/d2on.png'" onMouseOut="this.src='img/d2.png'">
-								</a> `;
+								</a>
+					<a href="#" onclick="playload('` + things[i][5] + `')" style="text-decoration:none" >
+									<img src="img/p2.png" alt="Download" border="0"
+										onMouseOver="this.src='img/p2on.png'" onMouseOut="this.src='img/p2.png'">
+								</a>
+					<a href="#" onclick="searchload('` + things[i][5] + `')" style="text-decoration:none" >
+									<img src="img/dl.png" alt="Download" border="0"
+										onMouseOver="this.src='img/dlon.png'" onMouseOut="this.src='img/dl.png'">
+								</a>`;
 					}
 
 					htmlstring += `
@@ -537,7 +545,7 @@
 
 				<tr>
 					<td height="36" class="homediv choosebg">
-						To download a program, choose the link &nbsp;<img src="img/d2.png">&nbsp; on the <strong>RIGHT</strong> of the program in the table below.<br><br>&nbsp;
+						To download a program, choose the link &nbsp;<img src="img/d2.png">&nbsp; on the <strong>RIGHT</strong> of the program in the table below. To play, choose &nbsp;<img src="img/p2.png">&nbsp; and to search for similar programs, choose &nbsp;<img src="img/dl.png">&nbsp;<br><br>&nbsp;
 
 					</td>
 				</tr>
