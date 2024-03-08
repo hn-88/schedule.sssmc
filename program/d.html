@@ -280,10 +280,10 @@
 		function playload(dfiles) {
 			dfilearray = dfiles.split(",");
 			serverprefix = `https://dl.sssmediacentre.org/`;
-			htmlstring = `"<audio id="audio" preload="auto" tabindex="0" controls="" type="audio/mpeg">
+			htmlstring = `<audio id="audio" preload="auto" tabindex="0" controls="" type="audio/mpeg">
                                        <source type="audio/mp3" src="` + serverprefix + dfilearray[0] + `">
                                            Sorry, your browser does not support HTML5 audio.
-                                       </audio><ul id="playlist">"`;
+                                       </audio><ul id="playlist">`;
 			
 			for (var i = 0; i < dfilearray.length; i++) {
 			   htmlstring += `<li class="active"><a href="` + serverprefix + dfilearray[i] + `">` + dfilearray[i] + `</a></li>`;
@@ -700,7 +700,7 @@ function init(){
     playlist = $('#playlist');
     tracks = playlist.find('li a');
     len = tracks.length - 1;
-    audio[0].volume = .10;
+    audio[0].volume = .90;
     playlist.find('a').click(function(e){
         e.preventDefault();
         link = $(this);
@@ -710,8 +710,8 @@ function init(){
     audio[0].addEventListener('ended',function(e){
         current++;
         if(current == len){
-            current = 0;
-            link = playlist.find('a')[0];
+            //current = 0;
+            //link = playlist.find('a')[0];
         }else{
             link = playlist.find('a')[current];    
         }
