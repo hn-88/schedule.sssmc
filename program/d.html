@@ -277,6 +277,25 @@
 			modalbody.innerHTML = htmlstring;
 		}
 
+		function playload(dfiles) {
+			dfilearray = dfiles.split(",");
+			serverprefix = `https://dl.sssmediacentre.org/`;
+			htmlstring = `"<audio id="audio" preload="auto" tabindex="0" controls="" type="audio/mpeg">
+                                       <source type="audio/mp3" src="` + serverprefix + dfilearray[0] + `">
+                                           Sorry, your browser does not support HTML5 audio.
+                                       </audio><ul id="playlist">"`;
+			
+			for (var i = 0; i < dfilearray.length; i++) {
+			   htmlstring += `<li class="active"><a href="` + serverprefix + dfilearray[i] + `">` + dfilearray[i] + `</a></li>`;
+			}
+			htmlstring += </ul>
+			
+            		var modal = document.getElementById("myModal");
+			modal.style.display = "block";
+			var modalbody = document.getElementById("myModalbody");
+			modalbody.innerHTML = htmlstring;
+		}
+
 		
 		function formatGMTtime(timestring) {
 			var hours = parseInt(timestring.substring(11, 13));
