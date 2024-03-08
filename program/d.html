@@ -297,6 +297,28 @@
 			init();
 		}
 
+		function getSSSMClink($searchterm) {
+		  $searchapiprefix='https://api.sssmediacentre.org/web/search/?searchKey=';
+		  $searchapisuffix="&startDate=null&endDate=null&wordequalizer=true&individualLimit=10&sortOrder=asc&limit=40&index=0&requiredChiled=true";
+		  $audiodetailprefix='https://sssmediacentre.org/listen/';
+		  $categoryprefix = "https://sssmediacentre.org/listen/?catId=";
+		  try {
+		    $response = file_get_contents($searchapiprefix . $searchterm . $searchapisuffix);
+		    $responseObj = json_decode($response);
+		    if($responseObj->result->audioTotalCount > 0) {
+		        //Logger.log( audiodetailprefix + responseObj.result.items[0].iteamId)
+		        //echo  $responseObj->result->items[0]->iteamId;
+		        //return $audiodetailprefix . $responseObj->result->items[0]->iteamId; // yes, the variable name is iteamId
+		       // return the search page instead
+		        return $websearchprefix . $searchterm;
+		    }
+		  } catch (Exception $e) {
+		    error_log($e->getMessage());
+		  }
+		  // else
+		  return '';
+		}
+
 		function searchload(dfiles) {
 			dfilearray = dfiles.split(",");
 			serverprefix = `https://dl.sssmediacentre.org/`;
