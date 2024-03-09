@@ -10,6 +10,9 @@
     overflow: auto; /* Enable scroll if needed */
     background-color: rgb(0,0,0); /* Fallback color */
     background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    word-wrap: break-word; /* prevent long filenames from exceeding the div sides */
+    overflow-wrap: break-word; /* https://stackoverflow.com/questions/12196885/text-flowing-out-of-div */
+     
 }
 
 /* Modal Content */
