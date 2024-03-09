@@ -301,6 +301,7 @@
 		  const searchapiprefix = 'https://api.sssmediacentre.org/web/search/?searchKey=';
 		  const searchapisuffix = '&startDate=null&endDate=null&wordequalizer=true&individualLimit=10&sortOrder=asc&limit=40&index=0&requiredChiled=true';
 		  const audiodetailprefix = 'https://sssmediacentre.org/listen/';
+		  const videodetailprefix = 'https://sssmediacentre.org/watch/';
 		  const categoryprefix = "https://sssmediacentre.org/listen/?catId=";
 		  var htmlstring = '';
 		  try {
@@ -311,12 +312,22 @@
 		      //console.log(responseObj.result.items[0].iteamId);
 		      //return audiodetailprefix + responseObj.result.items[0].iteamId; // yes, the variable name is iteamId
 		        for ( var i = 0; i < responseObj.result.audioTotalCount; i++) {
-			   htmlstring += `<p>`+i+`. <a href="` + audiodetailprefix + responseObj.result.items[i].iteamId 
-				   + `">` + responseObj.result.items[i].title + ' - ' + responseObj.result.items[i].description 
-				   + `</a><br><small>(<i>`+responseObj.result.items[i].category +`</i>) `;
-			   if ('subCategory' in responseObj.result.items[i])  {
-				   htmlstring += `(<i>`+responseObj.result.items[i].subCategory+`</i>)`;
-			   }
+				if (responseObj.result.items[i].iteamType === "AUDIO") {
+				   htmlstring += `<p>`+i+`. <a href="` + audiodetailprefix + responseObj.result.items[i].iteamId 
+					   + `">` + responseObj.result.items[i].title + ' - ' + responseObj.result.items[i].description 
+					   + ` target=_blank </a><br><small>(<i>`+responseObj.result.items[i].category +`</i>) `;
+				   if ('subCategory' in responseObj.result.items[i])  {
+					   htmlstring += `(<i>`+responseObj.result.items[i].subCategory+`</i>)`;
+			   	   }
+			   	}
+				if (responseObj.result.items[i].iteamType === "VIDEO") {
+				   htmlstring += `<p>`+i+`. <a href="` + videodetailprefix + responseObj.result.items[i].iteamId 
+					   + `">` + responseObj.result.items[i].title + ' - ' + responseObj.result.items[i].description 
+					   + ` target=_blank </a><br><small>(<i>`+responseObj.result.items[i].category +`</i>) `;
+				   if ('subCategory' in responseObj.result.items[i])  {
+					   htmlstring += `(<i>`+responseObj.result.items[i].subCategory+`</i>)`;
+			   	   }
+			   	}
 			htmlstring += `</small></p>`;
 			}
 		      return htmlstring;
