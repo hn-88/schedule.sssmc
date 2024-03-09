@@ -311,7 +311,10 @@
 		      //console.log(responseObj.result.items[0].iteamId);
 		      //return audiodetailprefix + responseObj.result.items[0].iteamId; // yes, the variable name is iteamId
 		      for ( var i = 0; i < responseObj.result.audioTotalCount; i++) {
-			   htmlstring += `<p><a href="` + audiodetailprefix + responseObj.result.items[i].iteamId + `">` + responseObj.result.items[i].title + ' - ' + responseObj.result.items[i].description + `</a></p>`;
+			   htmlstring += `<p>`+i+`. <a href="` + audiodetailprefix + responseObj.result.items[i].iteamId 
+				   + `">` + responseObj.result.items[i].title + ' - ' + responseObj.result.items[i].description 
+				   + `</a><br><small>(<i>`+responseObj.result.items[i].category
+				   +`</i>) (<i>`+responseObj.result.items[i].subCategory+`</i>)</small></p>`;
 			}
 		      
 		      return htmlstring;
