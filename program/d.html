@@ -342,12 +342,14 @@
 		}
 
 		async function searchload(dfiles) {
-			dfilearray = dfiles.split(",");
+			var dfilearray = dfiles.split(",");
 			// todo - create searchterm from dfilearray's first element
-			firstfilename = dfilearray[0].slice(0, -4);  // remove the .mp3 from the end
-			searchterm = firstfilename.replace(/^SV/, "%20");
+			var firstfilename = dfilearray[0].slice(0, -4);  // remove the .mp3 from the end
+			var searchterm = firstfilename.replace(/^SV/, "%20");
 			searchterm = searchterm.replace(/^DD/, "Divine%20Discourse");
 			searchterm = searchterm.replace(/[^A-Za-z0-9]/g, "%20");
+			var searchbox = document.getElementById("srchtxt");
+			searchbox.text = searchterm;
       
 			htmlstring = await getSSSMCresults(searchterm);
 			
