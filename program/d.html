@@ -323,7 +323,7 @@
 		  return '';
 		}
 
-		function searchload(dfiles) {
+		async function searchload(dfiles) {
 			dfilearray = dfiles.split(",");
 			// todo - create searchterm from dfilearray's first element
 			htmlstring = await getSSSMCresults('Curtain');
