@@ -314,7 +314,7 @@
 			   htmlstring += `<p>`+i+`. <a href="` + audiodetailprefix + responseObj.result.items[i].iteamId 
 				   + `">` + responseObj.result.items[i].title + ' - ' + responseObj.result.items[i].description 
 				   + `</a><br><small>(<i>`+responseObj.result.items[i].category +`</i>) `;
-			   if (subCategory in responseObj.result.items[i])  {
+			   if ('subCategory' in responseObj.result.items[i])  {
 				   htmlstring += `(<i>`+responseObj.result.items[i].subCategory+`</i>)`;
 			   }
 			htmlstring += `</small></p>`;
