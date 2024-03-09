@@ -346,9 +346,9 @@
 			var dfilearray = dfiles.split(",");
 			// todo - create searchterm from dfilearray's first element
 			var firstfilename = dfilearray[0].slice(0, -4);  // remove the .mp3 from the end
-			var searchterm = firstfilename.replace(/^SV/, "%20");
-			searchterm = searchterm.replace(/^DD/, "Divine%20Discourse");
-			searchterm = searchterm.replace(/[^A-Za-z0-9]/g, "%20");
+			var searchterm = firstfilename.replace(/^SV/, "");
+			searchterm = searchterm.replace(/^DD/, "Divine Discourse");
+			searchterm = searchterm.replace(/[^A-Za-z0-9]/g, " ");
 			var searchbox = document.getElementById("srchtxt");
 			searchbox.value = searchterm;
       
