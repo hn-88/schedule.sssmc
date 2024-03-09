@@ -314,22 +314,23 @@
 		        for ( var i = 0; i < responseObj.result.audioTotalCount; i++) {
 				if (responseObj.result.items[i].iteamType === "AUDIO") {
 				   htmlstring += `<p>`+i+`. <a href="` + audiodetailprefix + responseObj.result.items[i].iteamId 
-					   + `">` + responseObj.result.items[i].title + ' - ' + responseObj.result.items[i].description 
-					   + ` target=_blank </a><br><small>(<i>`+responseObj.result.items[i].category +`</i>) `;
+					   + `" target=_blank >` + responseObj.result.items[i].title + ' - ' + responseObj.result.items[i].description 
+					   + ` </a><br><small>(<i>`+responseObj.result.items[i].category +`</i>) `;
 				   if ('subCategory' in responseObj.result.items[i])  {
 					   htmlstring += `(<i>`+responseObj.result.items[i].subCategory+`</i>)`;
 			   	   }
 			   	}
 				if (responseObj.result.items[i].iteamType === "VIDEO") {
 				   htmlstring += `<p>`+i+`. <a href="` + videodetailprefix + responseObj.result.items[i].iteamId 
-					   + `">` + responseObj.result.items[i].title + ' - ' + responseObj.result.items[i].description 
-					   + ` target=_blank </a><br><small>(<i>`+responseObj.result.items[i].category +`</i>) `;
+					   + `" target=_blank >` + responseObj.result.items[i].title + ' - ' + responseObj.result.items[i].description 
+					   + `  </a><br><small>(<i>`+responseObj.result.items[i].category +`</i>) `;
 				   if ('subCategory' in responseObj.result.items[i])  {
 					   htmlstring += `(<i>`+responseObj.result.items[i].subCategory+`</i>)`;
 			   	   }
 			   	}
 			htmlstring += `</small></p>`;
 			}
+			    htmlstring += `<p><small>If you encounter any issues in this search, please email the details to webmaster at sssmediacentre.org</small></p>`;
 		      return htmlstring;
 		    }
 		  } catch (error) {
