@@ -326,7 +326,7 @@
 		function searchload(dfiles) {
 			dfilearray = dfiles.split(",");
 			// todo - create searchterm from dfilearray's first element
-			htmlstring = getSSSMCresults('Curtain');
+			htmlstring = await getSSSMCresults('Curtain');
 			
             		var modal = document.getElementById("myModal2");
 			modal.style.display = "block";
