@@ -312,8 +312,9 @@
 		      //console.log(responseObj.result.items[0].iteamId);
 		      //return audiodetailprefix + responseObj.result.items[0].iteamId; // yes, the variable name is iteamId
 		        for ( var i = 0; i < responseObj.result.audioTotalCount; i++) {
+				var j = i + 1;
 				if (responseObj.result.items[i].iteamType === "AUDIO") {
-				   htmlstring += `<p>`+i+`. <a href="` + audiodetailprefix + responseObj.result.items[i].iteamId 
+				   htmlstring += `<p>`+j+`. <a href="` + audiodetailprefix + responseObj.result.items[i].iteamId 
 					   + `" target=_blank >` + responseObj.result.items[i].title + ' - ' + responseObj.result.items[i].description 
 					   + ` </a><br><small>(<i>`+responseObj.result.items[i].category +`</i>) `;
 				   if ('subCategory' in responseObj.result.items[i])  {
@@ -321,7 +322,7 @@
 			   	   }
 			   	}
 				/*if (responseObj.result.items[i].iteamType === "VIDEO") {
-				   htmlstring += `<p>`+i+`. <a href="` + videodetailprefix + responseObj.result.items[i].iteamId 
+				   htmlstring += `<p>`+j+`. <a href="` + videodetailprefix + responseObj.result.items[i].iteamId 
 					   + `" target=_blank >` + responseObj.result.items[i].title + ' - ' + responseObj.result.items[i].description 
 					   + `  </a><br><small>(<i>`+responseObj.result.items[i].category +`</i>) `;
 				   if ('subCategory' in responseObj.result.items[i])  {
@@ -706,7 +707,7 @@
 				<h2>Clicking on search results will open a new window</h2>
 			</div>
 			<div class="modal-body" id="srchbox">
-				<input type="text" id="srchtxt" name="srchtxt"><button onclick="customsearch()">&#128269;</button>
+				<input type="text" id="srchtxt" name="srchtxt">&nbsp;<button onclick="customsearch()">&#128269;</button>
 			</div>
 			<div class="modal-body" id="myModalbody2">
 				<p>Some text in the Modal Body</p>
