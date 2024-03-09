@@ -310,13 +310,15 @@
 		      //Logger.log(audiodetailprefix + responseObj.result.items[0].iteamId)
 		      //console.log(responseObj.result.items[0].iteamId);
 		      //return audiodetailprefix + responseObj.result.items[0].iteamId; // yes, the variable name is iteamId
-		      for ( var i = 0; i < responseObj.result.audioTotalCount; i++) {
+		        for ( var i = 0; i < responseObj.result.audioTotalCount; i++) {
 			   htmlstring += `<p>`+i+`. <a href="` + audiodetailprefix + responseObj.result.items[i].iteamId 
 				   + `">` + responseObj.result.items[i].title + ' - ' + responseObj.result.items[i].description 
-				   + `</a><br><small>(<i>`+responseObj.result.items[i].category
-				   +`</i>) (<i>`+responseObj.result.items[i].subCategory+`</i>)</small></p>`;
+				   + `</a><br><small>(<i>`+responseObj.result.items[i].category +`</i>) `;
+			   if (subCategory in responseObj.result.items[i])  {
+				   htmlstring += `(<i>`+responseObj.result.items[i].subCategory+`</i>)`;
+			   }
+			htmlstring += `</small></p>`;
 			}
-		      
 		      return htmlstring;
 		    }
 		  } catch (error) {
