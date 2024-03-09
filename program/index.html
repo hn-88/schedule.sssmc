@@ -277,6 +277,96 @@
 			modalbody.innerHTML = htmlstring;
 		}
 
+		function playload(dfiles) {
+			dfilearray = dfiles.split(",");
+			serverprefix = `https://dl.sssmediacentre.org/`;
+			htmlstring = `<audio id="audio" preload="auto" tabindex="0" controls="" type="audio/mpeg">
+                                       <source type="audio/mp3" src="` + serverprefix + dfilearray[0] + `">
+                                           Sorry, your browser does not support HTML5 audio.
+                                       </audio><ul id="playlist">`;
+			
+			for (var i = 0; i < dfilearray.length; i++) {
+			   htmlstring += `<li class="active"><a href="` + serverprefix + dfilearray[i] + `">` + dfilearray[i] + `</a></li>`;
+			}
+			htmlstring += `</ul>`;
+			
+            		var modal = document.getElementById("myModal");
+			modal.style.display = "block";
+			var modalbody = document.getElementById("myModalbody");
+			modalbody.innerHTML = htmlstring;
+			init();
+		}
+
+		async function getSSSMCresults(searchterm) {
+		  const searchapiprefix = 'https://api.sssmediacentre.org/web/search/?searchKey=';
+		  const searchapisuffix = '&type=AUDIO';
+		  const audiodetailprefix = 'https://sssmediacentre.org/listen/';
+		  const videodetailprefix = 'https://sssmediacentre.org/watch/';
+		  const categoryprefix = "https://sssmediacentre.org/listen/?catId=";
+		  var htmlstring = '';
+		  try {
+		    const response = await fetch(searchapiprefix + searchterm + searchapisuffix);
+		    const responseObj = await response.json();
+		    if (responseObj.result.audioTotalCount > 0) {
+		      //Logger.log(audiodetailprefix + responseObj.result.items[0].iteamId)
+		      //console.log(responseObj.result.items[0].iteamId);
+		      //return audiodetailprefix + responseObj.result.items[0].iteamId; // yes, the variable name is iteamId
+		        for ( var i = 0; i < responseObj.result.audioTotalCount; i++) {
+				var j = i + 1;
+				if (responseObj.result.items[i].iteamType === "AUDIO") {
+				   htmlstring += `<p>`+j+`. <a href="` + audiodetailprefix + responseObj.result.items[i].iteamId 
+					   + `" target=_blank >` + responseObj.result.items[i].title + ' - ' + responseObj.result.items[i].description 
+					   + ` </a><br><small>(<i>`+responseObj.result.items[i].category +`</i>) `;
+				   if ('subCategory' in responseObj.result.items[i])  {
+					   htmlstring += `(<i>`+responseObj.result.items[i].subCategory+`</i>)`;
+			   	   }
+			   	}
+				/*if (responseObj.result.items[i].iteamType === "VIDEO") {
+				   htmlstring += `<p>`+j+`. <a href="` + videodetailprefix + responseObj.result.items[i].iteamId 
+					   + `" target=_blank >` + responseObj.result.items[i].title + ' - ' + responseObj.result.items[i].description 
+					   + `  </a><br><small>(<i>`+responseObj.result.items[i].category +`</i>) `;
+				   if ('subCategory' in responseObj.result.items[i])  {
+					   htmlstring += `(<i>`+responseObj.result.items[i].subCategory+`</i>)`;
+			   	   }
+			   	}*/
+			htmlstring += `</small></p>`;
+			}
+			    htmlstring += `<p><small>If you encounter any issues in this search, please email the details to webmaster at sssmediacentre.org</small></p>`;
+		      return htmlstring;
+		    }
+		  } catch (error) {
+		    console.error(error.message);
+		  }
+		  // else
+		  return `<p><small>No results found - please try with fewer words in the search term, or a different search term, or a variation in the spelling. 
+			  For a Divine Discourse, try entering the date, like 23 November 1990.</small></p>`;
+		}
+
+		async function searchload(dfiles) {
+			var dfilearray = dfiles.split(",");
+			// todo - create searchterm from dfilearray's first element
+			var firstfilename = dfilearray[0].slice(0, -4);  // remove the .mp3 from the end
+			var searchterm = firstfilename.replace(/^SV/, "");
+			searchterm = searchterm.replace(/^DD/, "Divine Discourse");
+			searchterm = searchterm.replace(/[^A-Za-z0-9]/g, " ");
+			var searchbox = document.getElementById("srchtxt");
+			searchbox.value = searchterm;
+      
+			htmlstring = await getSSSMCresults(searchterm);
+			
+            		var modal = document.getElementById("myModal2");
+			modal.style.display = "block";
+			var modalbody = document.getElementById("myModalbody2");
+			modalbody.innerHTML = htmlstring;
+		}
+
+		async function customsearch() {
+			var searchtext = document.getElementById("srchtxt").value;
+			var htmlstring = await getSSSMCresults(searchtext);
+			var modalbody = document.getElementById("myModalbody2");
+			modalbody.innerHTML = htmlstring;
+		}
+
 		
 		function formatGMTtime(timestring) {
 			var hours = parseInt(timestring.substring(11, 13));
@@ -397,7 +487,15 @@
 					htmlstring += `<div class="onlymobile">
 								&nbsp; &nbsp; `;
 					if (things[i][5] != '') {
-						htmlstring += `<a href="#" onclick="dnload('` + things[i][5] + `')" style="text-decoration:none" >
+						htmlstring += `<a href="javascript:void(0);" onclick="dnload('` + things[i][5] + `')" style="text-decoration:none" >
+									<img src="img/d2.png" alt="Download" border="0"
+										onMouseOver="this.src='img/d2on.png'" onMouseOut="this.src='img/d2.png'">
+								</a>
+					<a href="javascript:void(0);" onclick="playload('` + things[i][5] + `')" style="text-decoration:none" >
+									<img src="img/p2.png" alt="Download" border="0"
+										onMouseOver="this.src='img/p2on.png'" onMouseOut="this.src='img/p2.png'">
+								</a>
+					<a href="javascript:void(0);" onclick="searchload('` + things[i][5] + `')" style="text-decoration:none" >
 									<img src="img/dl.png" alt="Download" border="0"
 										onMouseOver="this.src='img/dlon.png'" onMouseOut="this.src='img/dl.png'">
 								</a> `;
@@ -412,10 +510,18 @@
 
 						<td align="center" valign="top">`;
 					if (things[i][5] != '') {
-                        htmlstring += `<a href="#" onclick="dnload('` + things[i][5] + `')" style="text-decoration:none" >
+                        htmlstring += `<a href="javascript:void(0);" onclick="dnload('` + things[i][5] + `')" style="text-decoration:none" >
+									<img src="img/d2.png" alt="Download" border="0"
+										onMouseOver="this.src='img/d2on.png'" onMouseOut="this.src='img/d2.png'">
+								</a>
+					<a href="javascript:void(0);" onclick="playload('` + things[i][5] + `')" style="text-decoration:none" >
+									<img src="img/p2.png" alt="Download" border="0"
+										onMouseOver="this.src='img/p2on.png'" onMouseOut="this.src='img/p2.png'">
+								</a>
+					<a href="javascript:void(0);" onclick="searchload('` + things[i][5] + `')" style="text-decoration:none" >
 									<img src="img/dl.png" alt="Download" border="0"
 										onMouseOver="this.src='img/dlon.png'" onMouseOut="this.src='img/dl.png'">
-								</a> `;
+								</a>`;
 					}
 
 					htmlstring += `
@@ -518,7 +624,7 @@
 
 				<tr>
 					<td height="36" class="homediv choosebg">
-						To download a program, choose the link &nbsp;<img src="img/dl.png">&nbsp; on the <strong>RIGHT</strong> of the program in the table below.<br><br>&nbsp;
+						To download a program, choose the link &nbsp;<img src="img/d2.png">&nbsp; on the <strong>RIGHT</strong> of the program in the table below. To play, choose &nbsp;<img src="img/p2.png">&nbsp; and to search for similar programs, choose &nbsp;<img src="img/dl.png">&nbsp;<br><br>&nbsp;
 
 					</td>
 				</tr>
@@ -576,7 +682,7 @@
 	
 
 	<!-- InstanceEnd -->
-	<!-- The Modal -->
+	<!-- The Modals -->
 	<div id="myModal" class="modal">
 
 		<!-- Modal content -->
@@ -596,24 +702,44 @@
 
 	</div>
 
+	<div id="myModal2" class="modal">
+
+		<!-- Modal content -->
+		<div class="modal-content">
+			<div class="modal-header">
+				<span class="close">&times;</span>
+				<h2>Clicking on search results will open a new window</h2>
+			</div>
+			<div class="modal-body" id="srchbox">
+				<input type="text" id="srchtxt" name="srchtxt">&nbsp;<button onclick="customsearch()">&#128269;</button>
+			</div>
+			<div class="modal-body" id="myModalbody2">
+				<p>Some text in the Modal Body</p>
+				<p>Some other text...</p>
+			</div>
+			<div class="modal-footer">
+				<h3>&nbsp;</h3>
+			</div>
+		</div>
+
+	</div>
+
+
 	<script>
 		// Get the modal
 		var modal = document.getElementById("myModal");
-
-		// Get the button that opens the modal
-		//var btn = document.getElementById("myBtn");
+		var modal2 = document.getElementById("myModal2");
 
 		// Get the <span> element that closes the modal
 		var span = document.getElementsByClassName("close")[0];
-
-		// When the user clicks the button, open the modal
-		//btn.onclick = function () {
-		//	modal.style.display = "block";
-		//}
+		var span2 = document.getElementsByClassName("close")[1];
 
 		// When the user clicks on <span> (x), close the modal
 		span.onclick = function () {
 			modal.style.display = "none";
+		}
+		span2.onclick = function () {
+			modal2.style.display = "none";
 		}
 
 		// When the user clicks anywhere outside of the modal, close it
@@ -621,7 +747,49 @@
 			if (event.target == modal) {
 				modal.style.display = "none";
 			}
+			if (event.target == modal2) {
+				modal2.style.display = "none";
+			}
 		}
+	</script>
+	<script>
+		var audio;
+var playlist;
+var tracks;
+var current;
+
+
+function init(){
+    current = 0;
+    audio = $('audio');
+    playlist = $('#playlist');
+    tracks = playlist.find('li a');
+    len = tracks.length - 1;
+    audio[0].volume = .90;
+    playlist.find('a').click(function(e){
+        e.preventDefault();
+        link = $(this);
+        current = link.parent().index();
+        run(link, audio[0]);
+    });
+    audio[0].addEventListener('ended',function(e){
+        current++;
+        if(current == len){
+            //current = 0;
+            //link = playlist.find('a')[0];
+        }else{
+            link = playlist.find('a')[current];    
+        }
+        run($(link),audio[0]);
+    });
+}
+function run(link, player){
+        player.src = link.attr('href');
+        par = link.parent();
+        par.addClass('active').siblings().removeClass('active');
+        audio[0].load();
+        audio[0].play();
+}
 	</script>
 </body>
 </html>
