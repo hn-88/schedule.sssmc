@@ -356,6 +356,12 @@
 			modalbody.innerHTML = htmlstring;
 		}
 
+		async function customsearch() {
+			htmlstring = await getSSSMCresults('Curtain');
+			var resultsdiv = document.getElementById("myModalbody2");
+			modalbody.innerHTML = htmlstring;
+		}
+
 		
 		function formatGMTtime(timestring) {
 			var hours = parseInt(timestring.substring(11, 13));
@@ -698,6 +704,9 @@
 			<div class="modal-header">
 				<span class="close">&times;</span>
 				<h2>Clicking on search results will open a new window</h2>
+			</div>
+			<div class="modal-body" id="srchbox">
+				<input type="text" id="srchtxt" name="srchtxt"><button onclick="customsearch()">&#128269;</button>
 			</div>
 			<div class="modal-body" id="myModalbody2">
 				<p>Some text in the Modal Body</p>
