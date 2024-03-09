@@ -338,7 +338,8 @@
 		    console.error(error.message);
 		  }
 		  // else
-		  return '<p><small>No results found - please try with fewer words in the search term, or a different search term.</small></p>';
+		  return `<p><small>No results found - please try with fewer words in the search term, or a different search term, or a variation in the spelling. 
+			  For a Divine Discourse, try entering the date, like 23 November 1990.</small></p>`;
 		}
 
 		async function searchload(dfiles) {
@@ -349,7 +350,7 @@
 			searchterm = searchterm.replace(/^DD/, "Divine%20Discourse");
 			searchterm = searchterm.replace(/[^A-Za-z0-9]/g, "%20");
 			var searchbox = document.getElementById("srchtxt");
-			searchbox.text = searchterm;
+			searchbox.value = searchterm;
       
 			htmlstring = await getSSSMCresults(searchterm);
 			
