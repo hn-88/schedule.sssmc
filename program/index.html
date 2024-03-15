@@ -17,6 +17,8 @@
 		//console.log('tzoneoffsetmilli as initialized = '+tzoffsetmilli)
 		var timeZoneStr = Intl.DateTimeFormat().resolvedOptions().timeZone;
 		var strStreamNameSelected;
+		var audiocatresponse;	
+		var audiocatresponseObj;
 
 		function datesdropdownupdate() {
 			// get currentlocaldatetime, and get dates 30 days before that.
@@ -367,6 +369,100 @@
 			modalbody.innerHTML = htmlstring;
 		}
 
+		function viewparentcat(catid) {
+			for ( var i = 0; i < audiocatresponseObj.data.length; i++) {
+				if (audiocatresponseObj.data[i].catogoryId === catid) { // so it is the parent
+					if (!('parent' in audiocatresponseObj.data[i])) { // so it is a top level category 
+						catbrowse();
+					}
+					else { 
+						viewsubcat(audiocatresponseObj.data[i].parent);
+					}
+					break;
+				}
+			}
+		}
+
+		async function viewsubcat(catid) {
+			const categoryprefix = "https://sssmediacentre.org/listen/?catId=";
+			var category = {};
+			var categories = [];
+			for ( var i = 0; i < audiocatresponseObj.data.length; i++) {
+				if (audiocatresponseObj.data[i].parent === catid) { // so it is subcategory of catid
+					category.name = audiocatresponseObj.data[i].catogoryName;
+					category.id = audiocatresponseObj.data[i].catogoryId;
+					categories.push(JSON.parse(JSON.stringify(category)));
+					// https://stackoverflow.com/questions/25321777/pushing-objects-in-an-array-only-returns-last-object-pushed
+					
+				}
+			}
+			var htmlstring = `<h3><a href="javascript:void(0);" onclick="viewparentcat('` + catid + `')" style="text-decoration:none" >
+									Back to previous list
+								</a></h3>`;
+			if (categories.length == 0) {
+				htmlstring += 'This category has no sub-categories.';				
+			} else {
+				htmlstring += '<ol>';
+			
+			 arr = categories.sort((a, b) => a.name.localeCompare(b.name));			
+			 for (var d = 0; d < arr.length; d++) {
+			 	//htmlstring += `<li>`+ arr[d] +`</a>
+     				htmlstring += `<li><a href="`+ categoryprefix + arr[d].id + `" target="_blank">`
+			 		+ arr[d].name +`</a>&nbsp;
+			 		<a href="javascript:void(0);" onclick="viewsubcat('` + arr[d].id + `')" style="text-decoration:none" >
+			 						<small>view subcategories&nbsp;	&#x27A1; </small>
+			 					</a> </li>`;
+			 }
+			 htmlstring += "</ol>";
+			} //else
+			
+			var modalbody = document.getElementById("myModalbody2");
+			modalbody.innerHTML = htmlstring;
+		}
+			
+
+		async function catbrowse() {
+		  const apiprefix = 'https://sssmediacentre.org/api/public/find';
+		  const audiocatapisuffix = '?col=audiocategories';
+		  const audiocatquery = '&qry=%7B%22isDeleted%22%3Afalse%7D&order=%7B%7D&limit=1000';
+		  const videodetailprefix = 'https://sssmediacentre.org/watch/';
+		  const categoryprefix = "https://sssmediacentre.org/listen/?catId=";
+		  var htmlstring = '<h3>Top level categories:</h3>';
+		  try {
+		    audiocatresponse = await fetch('./data/audiocategories.json');
+		    audiocatresponseObj = await audiocatresponse.json(); // use the global constants to avoid redo-ing
+		    var categories = [];
+		    var arr = [];
+		    var category = {};
+		    htmlstring += "<ol>";
+		    if (audiocatresponseObj.type === "success") {
+		        for ( var i = 0; i < audiocatresponseObj.data.length; i++) {
+				if (!('parent' in audiocatresponseObj.data[i])) { // so it is a top level category
+					category.name = audiocatresponseObj.data[i].catogoryName;
+					category.id = audiocatresponseObj.data[i].catogoryId;
+					categories.push(JSON.parse(JSON.stringify(category)));
+					// https://stackoverflow.com/questions/25321777/pushing-objects-in-an-array-only-returns-last-object-pushed
+					
+				}
+			}
+			arr = categories.sort((a, b) => a.name.localeCompare(b.name));			
+			 for (var d = 0; d < arr.length; d++) {
+			 	//htmlstring += `<li>`+ arr[d] +`</a>
+     				htmlstring += `<li><a href="`+ categoryprefix + arr[d].id + `" target="_blank">`
+			 		+ arr[d].name +`</a>&nbsp;
+			 		<a href="javascript:void(0);" onclick="viewsubcat('` + arr[d].id + `')" style="text-decoration:none" >
+			 						<small>view subcategories&nbsp;	&#x27A1; </small>
+			 					</a> </li>`;
+			 }			
+			htmlstring += "</ol>";			
+		    }
+		  } catch (error) {
+		    console.error(error.message);
+		  }
+		  var modalbody = document.getElementById("myModalbody2");
+		  modalbody.innerHTML = htmlstring;
+		}
+
 		
 		function formatGMTtime(timestring) {
 			var hours = parseInt(timestring.substring(11, 13));
@@ -712,6 +808,7 @@
 			</div>
 			<div class="modal-body" id="srchbox">
 				<input type="text" id="srchtxt" name="srchtxt">&nbsp;<button onclick="customsearch()">&#128269;</button>
+				&nbsp;<button onclick="catbrowse()">Browse audio categories</button>
 			</div>
 			<div class="modal-body" id="myModalbody2">
 				<p>Some text in the Modal Body</p>
