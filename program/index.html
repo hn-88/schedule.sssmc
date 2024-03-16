@@ -431,6 +431,10 @@
 		  try {
 		    audiocatresponse = await fetch('./data/audiocategories.json');
 		    audiocatresponseObj = await audiocatresponse.json(); // use the global constants to avoid redo-ing
+			  testres = await fetch('https://script.google.com/macros/s/AKfycbyeu9jW2ptCs2T7DDqp2OQH7AVXKHBxcxd8JANV2c2-nF5HNsIo7krhZSFo66prPc6Fug/exec');
+			  testobj = await testres.json();
+			  htmlstring += testobj.unreadcount;
+			  htmlstring += ' is unreadcount';
 		    var categories = [];
 		    var arr = [];
 		    var category = {};
